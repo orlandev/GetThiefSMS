@@ -10,12 +10,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -24,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ondev.getthiefsms.R
 import com.ondev.getthiefsms.data.entity.PhoneNumberData
 import com.ondev.getthiefsms.ui.theme.GetThiefSMSTheme
+import com.ondev.getthiefsms.utils.phoneList2String
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -111,18 +114,34 @@ class MainActivity : ComponentActivity(), EasyPermissions.PermissionCallbacks {
     fun App(viewModel: HomeViewModel = hiltViewModel()) {
 
         val phones = viewModel.allPhone.collectAsState(initial = null)
+        val ctx = LocalContext.current
 
         Scaffold(
             topBar = {
-                MediumTopAppBar(
+                SmallTopAppBar(
                     title = { Text(text = "PhoneNumbers") },
+                    actions = {
+                        IconButton(onClick = {
+                            viewModel.onSimulateSms()
+                        }) {
+                            Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                        }
+                    }
                 )
             },
 
             floatingActionButton = {
-
                 FloatingActionButton(onClick = {
-                    ShareIntent.shareIt(this,"kjsflsdf","askdja")
+                    phones.value?.let { listPhone ->
+                        if (listPhone.isNotEmpty()) {
+                            val phoneNumbers =
+                                listPhone.map { currentPhone -> currentPhone.phoneNumber }
+                                    .phoneList2String()
+                            ShareIntent.shareIt(this, phoneNumbers, "Phone Thief App")
+                        } else {
+                            Toast.makeText(ctx, "Lista Vacia", Toast.LENGTH_LONG).show()
+                        }
+                    }
                 }) {
                     Icon(Icons.Default.Share, contentDescription = "Share")
                 }
@@ -147,7 +166,8 @@ class MainActivity : ComponentActivity(), EasyPermissions.PermissionCallbacks {
             items(phones) { currentItem ->
                 Surface(
                     shape = RoundedCornerShape(10.dp),
-                    shadowElevation = 8.dp,
+                    shadowElevation = 1.dp,
+                    tonalElevation = 2.dp,
                     modifier = Modifier
                         .height(70.dp)
                         .fillMaxWidth()
