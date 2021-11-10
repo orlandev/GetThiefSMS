@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 data class PhoneNumberData(
     @PrimaryKey
     val phoneNumber: String,
-    //val data:Long,
+    val date:Long,
 )

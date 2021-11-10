@@ -8,6 +8,7 @@ import android.telephony.SmsMessage
 import android.util.Log
 import com.ondev.getthiefsms.data.entity.PhoneNumberData
 import com.ondev.getthiefsms.data.repository.PhoneRepository
+import com.ondev.getthiefsms.utils.IDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +31,7 @@ class SmsBroadcast : BroadcastReceiver(), CoroutineScope {
         val format = bundle!!.getString("format")
         // Retrieve the SMS message received.
         val pdus = bundle[pduType] as Array<*>?
-        Log.d("RECEIVE_MESSAGE","RECEIVED")
+        Log.d("RECEIVE_MESSAGE", "RECEIVED")
         when {
             !pdus.isNullOrEmpty() -> {
                 // Check the Android version.
@@ -49,8 +50,11 @@ class SmsBroadcast : BroadcastReceiver(), CoroutineScope {
                     val isValid = msgs[i]!!.messageBody.startsWith("th13f")
 
                     if (isValid) {
-                        Log.d("RECEIVE_MESSAGE","IS VALID")
-                        val phoneValid = PhoneNumberData(msgs[i]!!.originatingAddress.toString())
+                        Log.d("RECEIVE_MESSAGE", "IS VALID")
+                        val phoneValid = PhoneNumberData(
+                            msgs[i]!!.originatingAddress.toString(),
+                            IDate.nowInMillis()
+                        )
                         launch {
                             smsRepository.insert(phoneValid)
                         }

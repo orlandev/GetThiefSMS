@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -26,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ondev.getthiefsms.R
 import com.ondev.getthiefsms.data.entity.PhoneNumberData
 import com.ondev.getthiefsms.ui.theme.GetThiefSMSTheme
+import com.ondev.getthiefsms.utils.IDate
 import com.ondev.getthiefsms.utils.phoneList2String
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
@@ -120,13 +120,13 @@ class MainActivity : ComponentActivity(), EasyPermissions.PermissionCallbacks {
             topBar = {
                 SmallTopAppBar(
                     title = { Text(text = "PhoneNumbers") },
-                    actions = {
+                    /*actions = {
                         IconButton(onClick = {
                             viewModel.onSimulateSms()
                         }) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = null)
                         }
-                    }
+                    }*/
                 )
             },
 
@@ -135,7 +135,12 @@ class MainActivity : ComponentActivity(), EasyPermissions.PermissionCallbacks {
                     phones.value?.let { listPhone ->
                         if (listPhone.isNotEmpty()) {
                             val phoneNumbers =
-                                listPhone.map { currentPhone -> currentPhone.phoneNumber }
+                                listPhone.map { currentPhone ->
+                                    currentPhone.phoneNumber +" - "+ IDate.getDate(
+                                        currentPhone.date,
+                                        IDate.APP_DATE_PATTER
+                                    )
+                                }
                                     .phoneList2String()
                             ShareIntent.shareIt(this, phoneNumbers, "Phone Thief App")
                         } else {
@@ -173,17 +178,33 @@ class MainActivity : ComponentActivity(), EasyPermissions.PermissionCallbacks {
                         .fillMaxWidth()
                         .padding(2.dp)
                 ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(4.dp),
+                                .padding(4.dp)
+                                .weight(2f),
                             overflow = TextOverflow.Ellipsis,
                             text = currentItem.phoneNumber,
-                            fontSize = 32.sp,
+                            fontSize = 30.sp,
                             textAlign = TextAlign.Start
                         )
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp)
+                                .weight(1f),
+                            overflow = TextOverflow.Ellipsis,
+                            text = IDate.getDate(currentItem.date, IDate.APP_DATE_PATTER),
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.End
+                        )
                     }
+
                 }
             }
         }
