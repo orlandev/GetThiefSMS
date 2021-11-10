@@ -1,0 +1,14 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.GetThiefSMS" parent="Theme.AppCompat.DayNight.DarkActionBar">
+    </style>
+
+    <style name="Theme.GetThiefSMS.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.GetThiefSMS.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.GetThiefSMS.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>
